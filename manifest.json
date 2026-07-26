@@ -1,0 +1,12 @@
+{
+	"name": "RecipeEditor",
+	"version_number": "1.0.0",
+	"website_url": "",
+	"description": "Adds an in-game UI for easily making custom crafting recipes for the Wandering CHEF.",
+	"dependencies": [
+		"bbepis-BepInExPack-5.4.9",
+		"RiskofThunder-HookGenPatcher-1.2.1",
+		"RiskofThunder-R2API_Prefab-1.0.1",
+		"RiskofThunder-R2API_ContentManagement-1.0.1"
+	]
+}
