@@ -81,6 +81,8 @@ namespace RecipeEditor {
 
             string path = Assembly.GetExecutingAssembly().Location.Replace("RecipeEditor.dll", "saved_recipes.json");
 
+            var nullItem = Paths.ItemDef.AACannon;
+
             if (File.Exists(path)) {
                 try {
                     RecipeHolder holder = JsonConvert.DeserializeObject<RecipeHolder>(File.ReadAllText(path));
@@ -88,6 +90,8 @@ namespace RecipeEditor {
 
                     for (int i = 0; i < allRecipes.Count; i++) {
                         CraftableDef def = ScriptableObject.CreateInstance<CraftableDef>();
+                        def.pickup = nullItem;
+                        def.recipes = new Recipe[0];
                         RecipePack.craftableDefs.Add(def);
                     }
                 }
@@ -99,6 +103,7 @@ namespace RecipeEditor {
 
             PickupCatalog.availability.CallWhenAvailable(() => {
                 int i = 0;
+                List<string[]> toRemove = new();
                 foreach (string[] recipe in allRecipes) {
                     var p1 = recipe[0];
                     var p2 = recipe[1];
@@ -109,6 +114,7 @@ namespace RecipeEditor {
                     var p1_eDef = EquipmentCatalog.GetEquipmentDef(EquipmentCatalog.FindEquipmentIndex(p1));
                     if (!p1_iDef && !p1_eDef) {
                         i++;
+                        toRemove.Add(recipe);
                         continue;
                     }
 
@@ -116,6 +122,7 @@ namespace RecipeEditor {
                     var p2_eDef = EquipmentCatalog.GetEquipmentDef(EquipmentCatalog.FindEquipmentIndex(p2));
                     if (!p2_iDef && !p2_eDef) {
                         i++;
+                        toRemove.Add(recipe);
                         continue;
                     }
 
@@ -123,6 +130,7 @@ namespace RecipeEditor {
                     var o_eDef = EquipmentCatalog.GetEquipmentDef(EquipmentCatalog.FindEquipmentIndex(o));
                     if (!o_iDef && !o_eDef) {
                         i++;
+                        toRemove.Add(recipe);
                         continue;
                     }
 
@@ -141,6 +149,10 @@ namespace RecipeEditor {
                     };
                     cd.recipes[0] = rec;
                     i++;
+                }
+
+                foreach (var recipe in toRemove) {
+                    allRecipes.Remove(recipe);
                 }
             });
 

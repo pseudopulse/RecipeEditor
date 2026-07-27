@@ -24,12 +24,15 @@ namespace RecipeEditor {
         private Sprite deleteSprite;
         private List<CraftingItem> allIcons = new();
         private TMP_InputField field;
+        private Sprite nullSprite;
         public void Start() {
             StartCoroutine(FixUI());
             instance = this;
 
             var tex = Paths.Texture2D.texCrosshairUnavailable;
             deleteSprite = Sprite.Create(tex, new Rect(0f, 0f, tex.width, tex.height), new Vector2(0f, 0f));
+
+            nullSprite = Paths.EquipmentDef.SoulCorruptor.pickupIconSprite;
         }
         public IEnumerator FixUI() {
             yield return new WaitForEndOfFrame();
@@ -128,6 +131,10 @@ namespace RecipeEditor {
 
                 recipeViewer.transform.Find("Scroll View").GetComponent<ScrollRect>().verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
                 recipeViewer.transform.Find("Scroll View").Find("Scrollbar Vertical").transform.localPosition = new Vector3(0f, 330f, 0f);
+
+                if (CraftingSlots[0].storedItem) GameObject.Destroy(CraftingSlots[0].storedItem.gameObject);
+                if (CraftingSlots[1].storedItem) GameObject.Destroy(CraftingSlots[1].storedItem.gameObject);
+                if (CraftingSlots[2].storedItem) GameObject.Destroy(CraftingSlots[2].storedItem.gameObject);
 
                 foreach (var recipe in Main.allRecipes) {
                     var p1 = recipe[0];
@@ -313,7 +320,18 @@ namespace RecipeEditor {
 
             foreach (EquipmentIndex index in EquipmentCatalog.allEquipment.OrderBy(x => EquipmentCatalog.GetEquipmentDef(x).isLunar ? 1 : 0).ToArray()) {
                 EquipmentDef def = EquipmentCatalog.GetEquipmentDef(index);
-                if (!def.canDrop) continue;
+                if (!def.canDrop) {
+                    var str = Language.GetString(def.nameToken);
+                    var str2 = Language.GetString(def.descriptionToken);
+                    if (str.Contains("_") || str2.Contains("_")) {
+                        continue;
+                    }
+
+                    if (def.pickupIconSprite == nullSprite) {
+                        continue;
+                    }
+                }
+
                 GameObject itemButton = GameObject.Instantiate(Template.gameObject, Icons);
                 itemButton.gameObject.SetActive(true);
                 itemButton.transform.Find("Icon").GetComponent<Image>().sprite = def.pickupIconSprite;

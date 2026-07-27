@@ -67,10 +67,6 @@ namespace RecipeEditor {
             drag.GetComponent<CraftingItem>().clone = true;
             drag.GetComponent<Image>().raycastTarget = false;
             this.GetComponent<Image>().raycastTarget = false;
-            if (ourSlot) {
-                ourSlot.storedItem = null;
-                ourSlot = null;
-            }
             
             drag.transform.position = this.transform.position;
         }
@@ -81,9 +77,7 @@ namespace RecipeEditor {
             if (drag) {
                 drag.GetComponent<Image>().raycastTarget = true;
             }
-            if (!ourSlot && drag) {
-                GameObject.Destroy(drag);
-            }
+            drag = null;
         }
     }
 }
