@@ -6,6 +6,6 @@ Simply drag and drop items from the left-side selection into the recipe slots on
 
 To view all created recipes, click the 'View Recipes' button in the bottom right. Clicking the X button next to any recipe will remove that recipe.
 
-All recipes are written to a saved_recipes.json file in the mod folder.
+All recipes are written to a saved_recipes.json file in the config folder.
 
 ![](https://i.postimg.cc/T3Sk8ZVq/2026-07-26-17-51.png)

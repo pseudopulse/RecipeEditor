@@ -79,7 +79,12 @@ namespace RecipeEditor {
 
             SceneManager.activeSceneChanged += OnSceneChanged;
 
-            string path = Assembly.GetExecutingAssembly().Location.Replace("RecipeEditor.dll", "saved_recipes.json");
+            string path = BepInEx.Paths.ConfigPath + "/saved_recipes.json";
+            string backupPath = Assembly.GetExecutingAssembly().Location.Replace("RecipeEditor.dll", "saved_recipes.json");
+
+            if (File.Exists(backupPath) && !File.Exists(path)) {
+                File.Move(backupPath, path);
+            }
 
             var nullItem = Paths.ItemDef.AACannon;
 
