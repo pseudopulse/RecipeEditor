@@ -156,10 +156,11 @@ namespace RecipeEditor {
                     crafter.transform.GetChild(1).Find("Icon").gameObject.SetActive(true);
                     crafter.transform.GetChild(2).Find("Icon").gameObject.SetActive(true);
                     crafter.transform.GetChild(3).Find("Icon").gameObject.SetActive(true);
-                    crafter.transform.GetChild(1).Find("Icon").GetComponent<Image>().sprite = p1_iDef ? p1_iDef.pickupIconSprite : p1_eDef.pickupIconSprite;
-                    crafter.transform.GetChild(2).Find("Icon").GetComponent<Image>().sprite = p2_iDef ? p2_iDef.pickupIconSprite : p2_eDef.pickupIconSprite;
-                    crafter.transform.GetChild(3).Find("Icon").GetComponent<Image>().sprite = o_iDef ? o_iDef.pickupIconSprite : o_eDef.pickupIconSprite;
+                    crafter.transform.GetChild(1).Find("Icon").GetComponent<Image>().sprite = p1_iDef ? ResolveSprite(p1_iDef.pickupIconSprite, p1_iDef.pickupIconSpriteReference) : ResolveSprite(p1_eDef.pickupIconSprite, p1_eDef.pickupIconSpriteReference);
+                    crafter.transform.GetChild(2).Find("Icon").GetComponent<Image>().sprite = p2_iDef ? ResolveSprite(p2_iDef.pickupIconSprite, p2_iDef.pickupIconSpriteReference) : ResolveSprite(p2_eDef.pickupIconSprite, p2_eDef.pickupIconSpriteReference);
+                    crafter.transform.GetChild(3).Find("Icon").GetComponent<Image>().sprite = o_iDef ? ResolveSprite(o_iDef.pickupIconSprite, o_iDef.pickupIconSpriteReference) : ResolveSprite(o_eDef.pickupIconSprite, o_eDef.pickupIconSpriteReference);
                     crafter.transform.GetChild(3).Find("Quantity").GetComponent<TextMeshProUGUI>().text = c.ToString();
+                    crafter.transform.GetChild(3).GetComponent<CraftingSlot>().isDisplaySlot = true;
                     crafter.transform.GetChild(4).localPosition = new Vector3(-80f, -230f, 0f);
                     crafter.transform.GetChild(5).localPosition = new Vector3(85f, -230f, 0f);
 
@@ -258,6 +259,25 @@ namespace RecipeEditor {
             Main.SaveRecipes();
         }
 
+        public Sprite ResolveSprite(Sprite sprite, AssetReferenceT<Sprite> asset) {
+            if (asset != null) {
+                Sprite spr = null;
+
+                if (asset.OperationHandle.IsValid() && asset.OperationHandle.Result != null) {
+                    spr = asset.OperationHandle.Result as Sprite;
+                }
+                else {
+                    spr = asset.LoadAssetAsync().WaitForCompletion();
+                }
+
+                if (spr) {
+                    return spr;
+                }
+            }
+
+            return sprite;
+        }
+
         public void UpdateFilter(string val) {
             if (!string.IsNullOrEmpty(val)) {
                 foreach (CraftingItem item in allIcons) {
@@ -305,7 +325,8 @@ namespace RecipeEditor {
                 if (def.hidden || def.tier == ItemTier.NoTier) continue;
                 GameObject itemButton = GameObject.Instantiate(Template.gameObject, Icons);
                 itemButton.gameObject.SetActive(true);
-                itemButton.transform.Find("Icon").GetComponent<Image>().sprite = def.pickupIconSprite;
+                var img = itemButton.transform.Find("Icon").GetComponent<Image>();
+                img.sprite = ResolveSprite(def.pickupIconSprite, def.pickupIconSpriteReference);
                 itemButton.transform.Find("Quantity").gameObject.SetActive(false);
                     
                 CraftingItem crafting = itemButton.AddComponent<CraftingItem>();
@@ -334,7 +355,8 @@ namespace RecipeEditor {
 
                 GameObject itemButton = GameObject.Instantiate(Template.gameObject, Icons);
                 itemButton.gameObject.SetActive(true);
-                itemButton.transform.Find("Icon").GetComponent<Image>().sprite = def.pickupIconSprite;
+                var img = itemButton.transform.Find("Icon").GetComponent<Image>();
+                img.sprite = ResolveSprite(def.pickupIconSprite, def.pickupIconSpriteReference);
                 itemButton.transform.Find("Quantity").gameObject.SetActive(false);
                     
                 CraftingItem crafting = itemButton.AddComponent<CraftingItem>();

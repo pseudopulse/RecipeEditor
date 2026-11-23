@@ -8,6 +8,7 @@ namespace RecipeEditor {
     {
         public CraftingItem storedItem;
         public int quantity = 1;
+        public bool isDisplaySlot = false;
         public void OnDrop(PointerEventData eventData)
         {
             if (eventData.pointerDrag.transform) {
@@ -28,6 +29,10 @@ namespace RecipeEditor {
 
         public void OnScroll(PointerEventData eventData)
         {
+            if (isDisplaySlot) {
+                return;
+            }
+            
             float scroll = eventData.scrollDelta.y;
             int count = quantity;
 
